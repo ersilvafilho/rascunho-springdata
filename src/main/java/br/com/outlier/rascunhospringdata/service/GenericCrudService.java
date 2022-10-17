@@ -7,11 +7,13 @@ import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Service;
 
 import br.com.outlier.rascunhospringdata.entity.EntidadeBase;
-import br.com.outlier.rascunhospringdata.entity.UnidadeTrabalho;
 
 @Service
 @Transactional
@@ -28,7 +30,16 @@ public abstract class GenericCrudService<ID extends Serializable, T extends Enti
 	}
 
 	protected void print(Object mensagem) {
+		print(mensagem, false);
+	}
+
+	protected void print(Object mensagem, boolean clearScreen) {
 		System.out.println(String.format("[%s] %s", entityName, mensagem));
+		if (clearScreen) {
+			for (int i = 0; i < 50; i++) {
+				System.out.println();
+			}
+		}
 	}
 
 	public void menu(Scanner scanner) {
@@ -40,12 +51,14 @@ public abstract class GenericCrudService<ID extends Serializable, T extends Enti
 			print("Escolha a opção desejada: ");
 			print("0 - Retornar ");
 			print("1 - Listar registros");
-			print("2 - Novo registro");
-			print("3 - Atualizar registro");
-			print("4 - Excluir registro");
-			print("5 - Pesquisar registro");
-
+			print("2 - Listar registros (paginado)");
+			print("3 - Novo registro");
+			print("4 - Atualizar registro");
+			print("5 - Excluir registro");
+			print("6 - Pesquisar registro");
+			
 			opcao = scanner.nextLine();
+			print("", true);
 
 			switch (opcao) {
 			case "0": {
@@ -56,18 +69,22 @@ public abstract class GenericCrudService<ID extends Serializable, T extends Enti
 				break;
 			}
 			case "2": {
-				salvar(scanner);
+				listarPaginado(scanner);
 				break;
 			}
 			case "3": {
-				atualizar(scanner);
+				salvar(scanner);
 				break;
 			}
 			case "4": {
-				deletar(scanner);
+				atualizar(scanner);
 				break;
 			}
 			case "5": {
+				deletar(scanner);
+				break;
+			}
+			case "6": {
 				menuPesquisar(scanner);
 				break;
 			}
@@ -84,6 +101,38 @@ public abstract class GenericCrudService<ID extends Serializable, T extends Enti
 		print("Listando registros cadastrados: ");
 		Iterable<T> registros = crudRepository.findAll();
 		registros.forEach(r -> print(r.toString() + "\n"));
+	}
+
+	public void listarPaginado(Scanner scanner) {
+		doListarPaginado(scanner, 0);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void doListarPaginado(Scanner scanner, int pagina) {
+		print("Listando registros cadastrados: ");
+		PagingAndSortingRepository<T, ID> pasr = (PagingAndSortingRepository<T, ID>) crudRepository;
+		PageRequest pr = PageRequest.of(pagina, 5);
+		Page<T> page = pasr.findAll(pr);
+		print("");
+
+		page.getContent().forEach(r -> print(r + "\n"));
+		print(String.format("Mostrando %s registros", page.getNumberOfElements()));
+		print(String.format("Página atual: %s", page.getNumber() + 1));
+		print(String.format("Total de páginas: %s", page.getTotalPages()));
+		print(String.format("Total de registros: %s", page.getTotalElements()));
+		print("Informe qual página deseja visualizar, ou 0 para retornar: ");
+		String paginaInformada = scanner.nextLine();
+
+		Integer novaPagina = Integer.valueOf(paginaInformada);
+		if (novaPagina.equals(0)) {
+			return;
+		} else if (novaPagina < 1 || novaPagina.compareTo(page.getTotalPages()) > 0) {
+			print("Página inválida.");
+			return;
+		} else {
+			print("", true);
+			doListarPaginado(scanner, novaPagina - 1);
+		}
 	}
 
 	public abstract T buildSalvar(Scanner scanner);
@@ -140,8 +189,4 @@ public abstract class GenericCrudService<ID extends Serializable, T extends Enti
 		}
 	}
 
-	public static void main(String[] args) {
-		Class<UnidadeTrabalho> c = UnidadeTrabalho.class;
-		System.out.println(c.getSimpleName());
-	}
 }
