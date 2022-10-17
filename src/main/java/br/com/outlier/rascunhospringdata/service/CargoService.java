@@ -4,12 +4,15 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import br.com.outlier.rascunhospringdata.entity.Cargo;
 import br.com.outlier.rascunhospringdata.repository.CargoRepository;
 
 @Service
+@Transactional
 public class CargoService {
 
 	private CargoRepository cargoRepository;
@@ -121,5 +124,9 @@ public class CargoService {
 
 			}, () -> System.out.println(String.format("[CARGO] Cargo de ID<%s> não localizado.", id)));
 		}
+	}
+
+	public Cargo getCargoById(Integer id) {
+		return cargoRepository.findById(id).orElse(null);
 	}
 }
