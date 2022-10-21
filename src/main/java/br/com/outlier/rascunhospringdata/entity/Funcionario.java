@@ -3,6 +3,8 @@ package br.com.outlier.rascunhospringdata.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,8 +41,15 @@ public class Funcionario extends EntidadeBase<Long> {
 	@JoinColumn(name = "id_cargo")
 	private Cargo cargo;
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "funcionario_unid", joinColumns = { @JoinColumn(name = "id_funcionario") }, inverseJoinColumns = {
-			@JoinColumn(name = "id_unidade_trabalho") })
+	@JoinTable(name = "funcionario_unid", joinColumns = { @JoinColumn(name = "id_funcionario") }, inverseJoinColumns = { @JoinColumn(name = "id_unidade_trabalho") })
 	private List<UnidadeTrabalho> unidadesTrabalho;
+
+	@Override
+	public String toString() {
+		String f = "Funcionario [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", salario=" + salario + ", dataContratacao=" + dataContratacao + ", cargo=" + cargo + ", unidadesTrabalho="
+				+ unidadesTrabalho + "]";
+		String border = IntStream.rangeClosed(1, f.length()).boxed().map(i -> "").collect(Collectors.joining("-"));
+		return "\n" + border + "\n" + f + "\n" + border;
+	}
 
 }

@@ -19,8 +19,7 @@ public class RascunhoSpringDataApplication implements CommandLineRunner {
 	private UnidadeTrabalhoService unidadeTrabalhoService;
 	private FuncionarioService funcionarioService;
 
-	public RascunhoSpringDataApplication(CargoService cargoService, UnidadeTrabalhoService unidadeTrabalhoService,
-			FuncionarioService funcionarioService) {
+	public RascunhoSpringDataApplication(CargoService cargoService, UnidadeTrabalhoService unidadeTrabalhoService, FuncionarioService funcionarioService) {
 		this.cargoService = cargoService;
 		this.unidadeTrabalhoService = unidadeTrabalhoService;
 		this.funcionarioService = funcionarioService;

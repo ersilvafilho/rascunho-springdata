@@ -2,13 +2,14 @@ package br.com.outlier.rascunhospringdata.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import br.com.outlier.rascunhospringdata.entity.Funcionario;
 
 @Repository
-public interface FuncionarioRepository extends PagingAndSortingRepository<Funcionario, Long> {
+public interface FuncionarioRepository extends PagingAndSortingRepository<Funcionario, Long>, JpaSpecificationExecutor<Funcionario> {
 
 	public List<Funcionario> findByNomeLike(String nome);
 
