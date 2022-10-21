@@ -117,6 +117,7 @@ public class FuncionarioService extends GenericCrudService<Long, Funcionario, Fu
 		print("1 - Pesquisar por nome");
 		print("2 - Pesquisar por cargo (id)");
 		print("3 - Pesquisar por vários campos");
+		print("4 - Resumo");
 
 		String opcao = scanner.nextLine();
 
@@ -134,6 +135,10 @@ public class FuncionarioService extends GenericCrudService<Long, Funcionario, Fu
 		}
 		case "3": {
 			pesquisarVariosCampos(scanner);
+			break;
+		}
+		case "4": {
+			crudRepository.findAllResumo().forEach(f -> print(f.print()));
 			break;
 		}
 		default:
